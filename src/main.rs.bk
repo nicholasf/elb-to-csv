@@ -1,0 +1,39 @@
+
+extern crate rusoto;
+
+use rusoto::{DefaultCredentialsProvider, Region};
+use rusoto::s3::{S3Client, ListObjectsRequest};
+
+fn main() {
+    println!("Beginning.");
+  let provider = DefaultCredentialsProvider::new().unwrap();
+  println!("1");
+  let client = S3Client::new(provider, Region::ApSoutheast1);
+  println!("2");
+  let bucket = "ops-prod-logging-1/tcog/prod/AWSLogs/877800914193/elasticloadbalancing/ap-southeast-2/2016/12/19".to_string();
+  println!("3");
+  let delimiter = Some("|".to_string());
+
+  let list_objects_request: ListObjectsRequest = ListObjectsRequest{ 
+      bucket: bucket,
+      prefix: None,
+      max_keys: Some(10),
+      delimiter: delimiter,
+      marker: None,
+      encoding_type: None,
+    };
+
+    println!("Ok, requesting the list of objects.");
+
+  match client.list_objects(&list_objects_request) {
+    Ok(output) => {
+      for content in output.contents {
+          println!("{}", content.key);
+      }
+    }
+    Err(error) => {
+      println!("Error: {:?}", error);
+    }
+  }
+}
+
