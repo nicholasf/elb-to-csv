@@ -4,5 +4,6 @@ version = "0.1.0"
 authors = ["nicholasf"]
 
 [dependencies]
-rusoto = {version = "0.20", features = ["s3"]}
+rusoto_core = "0.31.0"
+rusoto_s3 = "0.31.0"
 chrono = "0.2"

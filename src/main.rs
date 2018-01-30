@@ -1,5 +1,6 @@
 
-extern crate rusoto;
+extern crate rusoto_core;
+extern crate rusoto_s3;
 extern crate chrono;
 
 use chrono::*;
@@ -10,14 +11,14 @@ use std::fs::File;
 
 use std::fs::OpenOptions;
 
-use rusoto::{ProfileProvider, Region};
-use rusoto::s3::{S3Client, ListObjectsRequest, GetObjectRequest};
+use rusoto_core::{ default_tls_client, ProfileProvider, Region };
+use rusoto_s3::{ S3, S3Client, ListObjectsRequest, GetObjectRequest };
 
 fn main() {
     println!("Beginning.");
     let mut provider = ProfileProvider::new().unwrap();
     provider.set_file_path("/Users/nicholasf/.aws/credentials.properties");
-    let client = S3Client::new(provider, Region::ApSoutheast2);
+    let client = S3Client::new(default_tls_client().unwrap(), provider, Region::ApSoutheast2);
     // let bucket = "s3://ops-prod-logging-1/tcog/prod/AWSLogs/877800914193/elasticloadbalancing/ap-southeast-2/2016/12/18".to_string();
     let bucket = "ops-prod-logging-1".to_string();
     let prefix = Some("tcog/tcog-nca/AWSLogs/877800914193/elasticloadbalancing/ap-southeast-2/2017/06/26".to_string());
@@ -30,6 +31,7 @@ fn main() {
         delimiter: delimiter,
         marker: None,
         encoding_type: None,
+        request_payer: None,
     };
 
     println!("Ok, requesting the list of objects.");
@@ -39,13 +41,14 @@ fn main() {
 
     match client.list_objects(&list_objects_request) {
         Ok(output) => {
-            for content in output.contents {
-                println!("{}", content.key);
-                object_request.key = content.key;
+            for content in output.contents.unwrap() {
+                println!("{:?}", content.key.unwrap());
+                object_request.key = content.key.unwrap();
 
                 match client.get_object(&object_request) {
                     Ok(output) => {
-                        let log = String::from_utf8(output.body).unwrap();
+                        let streamingBody = output.body.unwrap();
+                        let log = String::from_utf8(streamingBody);
                         let csv = generate_csv(log);
                         match OpenOptions::new().write(true).open("out.csv") {
                             Ok(mut f) => {
