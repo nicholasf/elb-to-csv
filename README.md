@@ -1,14 +1,13 @@
-Downloads Classic ELB logs from an S3 bucket and stores them in a postgres database.
+Transforms an access log for a classic ELB into a CSV.
+# Install
 
-ELB Logging on AWS is explained at http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/access-log-collection.html .
+Just git clone this repo. 
 
-## Log syntax.
+Any version of Node should work - the only dependencies are `fs.readdir` and `fs.readFile`.
+# Running
 
-```
-timestamp elb client:port backend:port request_processing_time backend_processing_time response_processing_time elb_status_code backend_status_code received_bytes sent_bytes "request" "user_agent" ssl_cipher ssl_protocol
-```
+Put your access logs into a `./logs` dir beneath the project root then use `npm start`. A `data.csv` will be produced.
 
-This program was originally written to generate CSV data for JMeter load tests. It can be still be used for this purpose.
+# Customising
 
-
-elb-logs-to-postgres.
+This was written to deal with certain conditions in access logs for the stack I work on. Just adapt index.js to the conditions you want to check for.

@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+.DS_Store?
+
+# Editors
+.idea/*
+*.sublime-*
+.project
+
+# Logs
+./logs
+
+# Package Managers
+node_modules
+
+# Generated Files
+./data.csv
