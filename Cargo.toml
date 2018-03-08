@@ -1,9 +1,0 @@
-[package]
-name = "elb-to-csv"
-version = "0.1.0"
-authors = ["nicholasf"]
-
-[dependencies]
-rusoto_core = "0.31.0"
-rusoto_s3 = "0.31.0"
-chrono = "0.2"
